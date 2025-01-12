@@ -1,0 +1,5 @@
+# Generated directories
+_output/
+_solution/
+.vscode/
+imgui.ini
