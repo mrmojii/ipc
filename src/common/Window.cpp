@@ -54,6 +54,15 @@ void Window::Run()
         {
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(m_window))
                 Close();
+
+            if (event.type == SDL_WINDOWEVENT) {
+                printf("window event %d\n", event.window.event);
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED || event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                    printf("resized %d %dx%d\n", event.window.event, event.window.data1, event.window.data2);
+                    m_width = event.window.data1;
+                    m_height = event.window.data2;
+                }
+            }
         }
         if (SDL_GetWindowFlags(m_window) & SDL_WINDOW_MINIMIZED)
         {
