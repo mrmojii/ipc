@@ -7,7 +7,7 @@ file(GLOB_RECURSE CLIENT_SOURCES_FILES
 )
 
 # Create targets
-add_executable(Client ${CLIENT_SOURCES_FILES})
+add_executable(Client WIN32 ${CLIENT_SOURCES_FILES})
 
 # Setup tab sources
 foreach(_source IN ITEMS ${CLIENT_SOURCES_FILES})
@@ -23,4 +23,5 @@ set_target_properties(Client PROPERTIES FOLDER "Client")
 set_target_properties(Client PROPERTIES LINK_FLAGS "${IGNORE_WARNINGS}") # Missing pdb
 
 target_include_directories(Client PUBLIC "${CLIENT_SOURCES_FILES}" "${EXTERN_DIR}/boost")
-target_link_libraries(Client PRIVATE Common Boost)
+target_link_directories(Client PUBLIC "${EXTERN_DIR}/sdl/lib")
+target_link_libraries(Client PRIVATE Common Boost SDL2 SDL2main SDL2test)

@@ -1,15 +1,16 @@
 #include <iostream>
 
-#include "boost/interprocess/mapped_region.hpp"
-#include "boost/interprocess/shared_memory_object.hpp"
 
-#define SDL_MAIN_HANDLED
+
+//#define SDL_MAIN_HANDLED
 
 #include "Host.h"
 
 std::atomic<bool> g_running;
 
-int main()
+int WinMain()
+
+//int main()
 {
     Host host;
     if (host.Init())

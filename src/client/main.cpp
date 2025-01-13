@@ -1,10 +1,17 @@
 #include <iostream>
-#include "boost/interprocess/mapped_region.hpp"
-#include "boost/interprocess/shared_memory_object.hpp"
+//#include "boost/interprocess/mapped_region.hpp"
+//#include "boost/interprocess/shared_memory_object.hpp"
+#define SDL_MAIN_HANDLED
 
-int main()
+#include "Client.h"
+
+int WinMain()
+//int main()
 {
-    boost::interprocess::shared_memory_object shm{
+    Client client;
+    if (client.Init())
+        client.Run();
+    /*boost::interprocess::shared_memory_object shm{
         boost::interprocess::open_only,
         "SharedMemory",
         boost::interprocess::read_only
@@ -19,6 +26,6 @@ int main()
 
     boost::interprocess::shared_memory_object::remove("SharedMemory");
 
-    std::cout << "Client is closing...\n";
+    std::cout << "Client is closing...\n";*/
     return 0;
 }

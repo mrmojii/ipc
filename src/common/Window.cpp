@@ -1,9 +1,26 @@
 #include "Window.h"
 #include <stdio.h>
 
+int eventWatch(void* pthis, SDL_Event* event)
+{
+    if (event->type != SDL_WINDOWEVENT)
+        return 1;
+
+    if (event->window.event == SDL_WINDOWEVENT_SIZE_CHANGED
+        || event->window.event == SDL_WINDOWEVENT_MOVED)
+    {
+        Window* window = (Window*)pthis;
+        SDL_RenderSetViewport(window->renderer(), NULL);
+        window->Render();
+    }
+
+    return 1;
+}
+
 Window::Window(const std::string& name, int width, int height)
     : m_window(nullptr)
     , m_renderer(nullptr)
+    , m_texture(nullptr)
     , m_running(false)
     , m_name(name)
     , m_width(width)
@@ -32,6 +49,9 @@ bool Window::Init()
         printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
         return false;
     }
+
+    SDL_GetWindowPosition(m_window, &m_posX, &m_posY);
+
     m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     if (m_renderer == nullptr)
     {
@@ -39,12 +59,18 @@ bool Window::Init()
         return false;
     }
 
+    SDL_SetEventFilter((SDL_EventFilter)eventWatch, this);
+
     return true;
 }
 
 void Window::Run()
 {
     m_running = true;
+
+    SDL_Surface* image = SDL_LoadBMP(m_imagePath.c_str());
+    m_texture = SDL_CreateTextureFromSurface(m_renderer, image);
+    SDL_FreeSurface(image);
 
     while (m_running)
     {
@@ -55,12 +81,12 @@ void Window::Run()
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(m_window))
                 Close();
 
-            if (event.type == SDL_WINDOWEVENT) {
-                printf("window event %d\n", event.window.event);
-                if (event.window.event == SDL_WINDOWEVENT_RESIZED || event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                    printf("resized %d %dx%d\n", event.window.event, event.window.data1, event.window.data2);
-                    m_width = event.window.data1;
-                    m_height = event.window.data2;
+            if (event.type == SDL_KEYDOWN)
+            {
+                //printf("keydown: %d - %d, mod = %d\n", event.key.keysym.scancode, event.key.keysym.sym, event.key.keysym.mod);
+                if (event.key.keysym.sym == 'a')
+                {
+                    printf("pos:  %dx%d\nsize: %dx%d\n", m_posX, m_posY, m_width, m_height);
                 }
             }
         }
@@ -69,26 +95,49 @@ void Window::Run()
             SDL_Delay(10);
             continue;
         }
-
-        // -- do something here --
-
-        // -- ----------------- --
-
-        // End Frame
-        float colors[] = { 0.45f, 0.55f, 0.60f, 1.00f };
-
-        SDL_RenderSetScale(m_renderer, m_width, m_height);
-        SDL_SetRenderDrawColor(m_renderer, (Uint8)(colors[0] * 255), (Uint8)(colors[1] * 255), (Uint8)(colors[2] * 255), (Uint8)(colors[3] * 255));
-        SDL_RenderClear(m_renderer);
-        SDL_RenderPresent(m_renderer);
+        
+        Render();
     }
+}
+
+void Window::SetImage(const std::string& path)
+{
+    m_imagePath = std::string(SDL_GetBasePath()) + path;
 }
 
 void Window::Close()
 {
     m_running = false;
 
+    SDL_DestroyTexture(m_texture);
     SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     SDL_Quit();
+}
+
+void Window::Render()
+{
+    SDL_GetWindowSize(m_window, &m_width, &m_height);
+    SDL_GetWindowPosition(m_window, &m_posX, &m_posY);
+
+    float colors[] = { 0.45f, 0.55f, 0.60f, 1.00f };
+    SDL_SetRenderDrawColor(m_renderer, (Uint8)(colors[0] * 255), (Uint8)(colors[1] * 255), (Uint8)(colors[2] * 255), (Uint8)(colors[3] * 255));
+    SDL_RenderClear(m_renderer);
+
+    // -- do something here --
+    if (m_renderType == RenderType::Normal)
+    {
+        SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
+    }
+    else
+    {
+        SDL_Rect srcrect = { 0,0,306, 200 };
+        SDL_Rect dstrect = { m_renderConfig.posX, m_renderConfig.posY, m_renderConfig.sizeX, m_renderConfig.sizeY };
+        int res = SDL_RenderCopy(m_renderer, m_texture, NULL, &dstrect);
+    }
+
+    // -- ----------------- --
+
+    // End Frame
+    SDL_RenderPresent(m_renderer);
 }

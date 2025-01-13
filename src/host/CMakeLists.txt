@@ -7,7 +7,7 @@ file(GLOB_RECURSE HOST_SOURCES_FILES
 )
 
 # Create targets
-add_executable(Host ${HOST_SOURCES_FILES})
+add_executable(Host WIN32 ${HOST_SOURCES_FILES})
 
 # Setup tab sources
 foreach(_source IN ITEMS ${HOST_SOURCES_FILES})
