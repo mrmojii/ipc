@@ -1,24 +1,19 @@
 #include <iostream>
-#include <atomic>
-#include "thread"
 
 #include "boost/interprocess/mapped_region.hpp"
 #include "boost/interprocess/shared_memory_object.hpp"
 
 #define SDL_MAIN_HANDLED
 
-#include "Window.h"
+#include "Host.h"
 
 std::atomic<bool> g_running;
 
 int main()
 {
-    printf("Host - starting...\n");
-    Window window;
-    if (window.Init())
-    {
-        window.Run();
-    }
+    Host host;
+    if (host.Init())
+        host.Run();
 
     /*boost::interprocess::shared_memory_object shm{
         boost::interprocess::create_only,
@@ -35,7 +30,5 @@ int main()
 
     memset(region.get_address(), 1, region.get_size());*/
 
-    
-    std::cout << "Host is closing...\n";
     return 0;
 }
