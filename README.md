@@ -9,7 +9,7 @@ In order to setup the project follow the steps:
 - Clone the repo to your local machine
 - Go to the root folder of the project
 - Open PowerShell in the root of the project
-- use `./generate -install`
+- use `./generate -build -install`
 
 After these steps you should see new generated folder: '_solutions' and 'build'. You Visual Studio solution is located inside of the '_solutions' folder.
 

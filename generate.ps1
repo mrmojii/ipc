@@ -1,7 +1,8 @@
- param (
+     param (
     [switch] $Cleanup,   # Clean generated files
     [switch] $Build,     # Build binaries
     [switch] $Install,   # Install resources
+    [switch] $VS2019,    # Visual studio 2019
     [switch] $NoCleanup # Don't clean
  )
 
@@ -37,7 +38,11 @@ function generateSolution()
     Push-Location -Path  "$PSScriptRoot/_solution"
 
     Write-Host "Generating Visual Studio solution." -ForegroundColor DarkGreen
-    cmake .. -G "Visual Studio 17 2022" -A x64
+
+    if($VS2019)
+        cmake .. -G "Visual Studio 16 2019" -A x64
+    else
+        cmake .. -G "Visual Studio 17 2022" -A x64
     
     Pop-Location
 }
