@@ -40,9 +40,13 @@ function generateSolution()
     Write-Host "Generating Visual Studio solution." -ForegroundColor DarkGreen
 
     if($VS2019)
+    {
         cmake .. -G "Visual Studio 16 2019" -A x64
+    }
     else
+    {
         cmake .. -G "Visual Studio 17 2022" -A x64
+    }
     
     Pop-Location
 }
